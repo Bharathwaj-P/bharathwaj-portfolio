@@ -38,7 +38,7 @@
 
 *{ margin:0; padding:0; box-sizing:border-box; }
 
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; overflow-x:hidden; }
 
 body{
   background:var(--ivory);
@@ -113,6 +113,7 @@ body.touch #cursor-dot, body.touch #cursor-ring, body.touch #cursor-label{ displ
 .eyebrow{
   font-family:var(--f-mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
   color:var(--emerald); display:flex; align-items:center; gap:10px;
+  flex-wrap:wrap; row-gap:6px;
 }
 .eyebrow::before{ content:''; width:16px; height:1px; background:var(--emerald); }
 .section{ padding:120px 0; position:relative; border-top:1px solid var(--line); }
@@ -483,6 +484,104 @@ footer{ border-top:1px solid var(--line-strong); padding:70px 0 40px; }
 }
 
 a:focus-visible, button:focus-visible{ outline:2px solid var(--emerald); outline-offset:3px; }
+
+/* ============================================================
+   MOBILE RESPONSIVE FIXES
+   Everything below is additive: it only tightens behaviour at
+   narrow widths and never changes a desktop rule already defined
+   above. Nothing here alters color, type family, section order,
+   content, or the desktop layout.
+   ============================================================ */
+
+/* Long unbroken strings (a pasted email, a long word in a heading)
+   can never force the page wider than the viewport. */
+h1, h2, h3,
+.featured-title, .phil-text, .about-statement,
+.c-value, .footer-links a, .price-card .includes li,
+.now-card h3, .exp-item, .t-text .t-title, .logo, .footer-logo{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+/* Flex/grid children default to min-width:auto, which is what let
+   long text push siblings (arrows, icons) past the edge of the
+   screen. Letting them shrink lets the text wrap instead. */
+.hero-ticker .ticker-items,
+.channel > div,
+.now-dash-row .v,
+.featured-top > *,
+.now-card,
+.price-card{
+  min-width:0;
+}
+.channel{ flex-wrap:wrap; row-gap:8px; }
+.channel .c-arrow{ flex-shrink:0; }
+
+/* The About statement only needs position:sticky in the two-column
+   desktop layout. Once the grid collapses to one column there is
+   no room for it to stick within, and some mobile browsers stick
+   it over the paragraph text below instead — so it's switched off
+   for the exact width where the grid becomes a single column. */
+@media (max-width:900px){
+  .about-statement{ position:static; top:auto; }
+}
+
+/* Timeline dot and the vertical rule it sits on were 4px apart on
+   mobile (16px vs 20px) — line them up exactly. */
+@media (max-width:700px){
+  .t-dot{ left:20px; }
+}
+
+/* .philosophy sets its own padding further down the stylesheet than
+   the ".section" mobile rule, so at every mobile width it was
+   silently overriding the shared 76px rhythm and keeping the full
+   150px desktop padding. This restores the same spacing as every
+   other section on mobile. */
+@media (max-width:768px){
+  .philosophy{ padding:76px 0; }
+}
+
+/* The reveal-on-scroll offset (18px) is sized for the generous
+   120px desktop section spacing. On short mobile viewports the
+   same offset can visually brush against the content above it
+   mid-animation, so it's reduced rather than removed. */
+@media (max-width:768px){
+  [data-reveal]{ transform:translateY(10px); }
+}
+
+/* Two differently-sized buttons squeezed onto one row read as
+   cramped on phones — give them equal width, stacked. */
+@media (max-width:420px){
+  .hero-actions{ flex-direction:column; align-items:stretch; }
+  .hero-actions .btn{ width:100%; justify-content:center; }
+}
+
+/* Padding tuned for desktop's larger canvas reads as cramped at
+   phone widths; letting cards size to their own content (instead
+   of a fixed min-height) also fixes the uneven gaps between them. */
+@media (max-width:640px){
+  .now-card{ padding:28px 24px; min-height:0; }
+  .price-card{ padding:28px 24px; }
+  .exp-item{ padding:24px 20px; min-height:0; }
+  .channel{ padding:20px 0; }
+}
+
+/* The display type scale's minimum sizes assumed a ~390px+ screen.
+   Phones from 320–380px need a lower floor so headlines can never
+   run into the edge of the viewport. */
+@media (max-width:380px){
+  .hero-headline h1{ font-size:clamp(32px, 9.5vw, 84px); }
+  .featured-title{ font-size:clamp(38px, 13vw, 120px); }
+  .phil-text{ font-size:clamp(26px, 8.4vw, 68px); }
+  .section-head h2{ font-size:clamp(26px, 7.4vw, 46px); }
+  .contact-top h2{ font-size:clamp(28px, 8.4vw, 58px); }
+  .services-left h2{ font-size:clamp(24px, 7.4vw, 42px); }
+  .about-statement{ font-size:clamp(22px, 6.2vw, 38px); }
+}
+
+/* Mobile nav labels sized relative to viewport instead of a fixed
+   38px so they can never overflow the smallest phones. */
+.mobile-menu a{ font-size:clamp(28px, 9vw, 38px); }
 </style>
 </head>
 <body>
@@ -826,11 +925,11 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--emerald); outline
         <div class="eyebrow">CONTACT</div>
         <h2 style="margin-top:18px;">Let's build something.</h2>
         <p>Have an idea, project, collaboration, opportunity, or simply want to connect? I'm always open to meeting people who are building, learning and thinking differently.</p>
-        <a href="mailto:bharathwajpalanisamy@gmail.com< class="btn btn-solid magnetic" data-cursor data-cursor-text="OPEN">Let's Talk →</a>
+        <a href="mailto:bharathwajpalanisamy@gmail.com" class="btn btn-solid magnetic" data-cursor data-cursor-text="OPEN">Let's Talk →</a>
       </div>
 
       <div class="contact-channels" data-reveal>
-        <a href="https://www.linkedin.com/in/bharathwaj-palanisamy-784736368" target="_blank" rel="noopener" class="channel" data-cursor data-cursor-text="OPEN">
+        <a href="https://www.linkedin.com/in/bharathwaj-palanisamy-784736368/" target="_blank" rel="noopener" class="channel" data-cursor data-cursor-text="OPEN">
           <div><div class="c-label">LinkedIn</div><div class="c-value">Connect on LinkedIn</div></div>
           <span class="c-arrow">↗</span>
         </a>
@@ -859,7 +958,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--emerald); outline
         <div class="footer-tag">Student Founder · Builder · Learner</div>
       </div>
       <div class="footer-links">
-        <a href="https://linkedin.com/in/bharathwaj-palanisamy-784736368" target="_blank" rel="noopener" data-cursor data-cursor-text="OPEN">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/bharathwaj-palanisamy-784736368/" target="_blank" rel="noopener" data-cursor data-cursor-text="OPEN">LinkedIn</a>
         <a href="https://antriofin.com" target="_blank" rel="noopener" data-cursor data-cursor-text="OPEN">Antriofin</a>
         <a href="mailto:bharathwajpalanisamy@gmail.com" data-cursor data-cursor-text="OPEN">Email</a>
       </div>
